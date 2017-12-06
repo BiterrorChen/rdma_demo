@@ -1,0 +1,5 @@
+add_executable(RDMA_example_application_server server.c)
+add_executable(RDMA_example_application_client client.c)
+
+target_link_libraries(RDMA_example_application_server rdmacm ibverbs pthread)
+target_link_libraries(RDMA_example_application_client rdmacm ibverbs pthread)
