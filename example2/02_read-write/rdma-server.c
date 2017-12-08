@@ -24,7 +24,7 @@ int main(int argc, char **argv)
     usage(argv[0]);
 
   memset(&addr, 0, sizeof(addr));
-  addr.sin_family = AF_INET6;
+  addr.sin_family = AF_INET;
   addr.sin_port = htons(10086);
   addr.sin_addr.s_addr = INADDR_ANY;
 
