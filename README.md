@@ -35,10 +35,10 @@ client
 $./client read/write 192.168.1.2  10086
 
 ---
+example2/03:
 server :
-
 $ ./server
 
 client
 
-$./client <server-address> <file-name>
+$./client server-address file-name
