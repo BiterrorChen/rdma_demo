@@ -3,7 +3,7 @@ server :
 
 $ ./server 
 
-client : ( syntax:  client [servername] 10086 )
+client 
 
 $./client <server-address> <file-name> 
 
