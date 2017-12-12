@@ -1,5 +1,4 @@
 title File Transfer
-
 note left of Client: Post receive
 Client->Server: Initiate connection
 note right of Server: Post receive
@@ -20,4 +19,6 @@ note left of Client: Re-post receive
 Client->Server: RDMA-write zero bytes
 Server->Client: Send done (MSG_DONE)
 Client->Server: Close connection
+note right of Server: Close file descriptor
+note right of Server: Close file descriptor
 note right of Server: Close file descriptor
