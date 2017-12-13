@@ -3,9 +3,9 @@
 
 using namespace std;
 
-Configuration::Configuration() {
+Configuration::Configuration(char *path) {
   ServerCount = 0;
-  read_xml("../conf.xml", pt);
+  read_xml(path, pt);
   ptree child = pt.get_child("address");
   for (BOOST_AUTO(pos, child.begin()); pos != child.end(); ++pos) {
     id2ip[(uint16_t)(pos->second.get<int>("id"))] =

@@ -18,7 +18,7 @@ private:
 	unordered_map<string, uint16_t> ip2id;
 	int ServerCount;
 public:
-	Configuration();
+	Configuration(char *path);
 	~Configuration();
 	string getIPbyID(uint16_t id);
 	uint16_t getIDbyIP(string ip);

@@ -119,6 +119,7 @@ public:
 	void RdmaListen();
 	/* Called by client side to connect to each of server actively. */
 	void RdmaConnect();
+	void RdmaConnect(uint16_t NodeID);
 	/* Called to check completion of RDMA operations */
 	int PollCompletion(uint16_t NodeID, int PollNumber, struct ibv_wc *wc);
 	int PollWithCQ(int cqPtr, int PollNumber, struct ibv_wc *wc);

@@ -323,7 +323,7 @@ bool RdmaSocket::ModifyQPtoRTR(struct ibv_qp *qp, uint32_t remote_qpn,
   }
   rc = ibv_modify_qp(qp, &attr, flags);
   if (rc) {
-    Debug::notifyError("failed to modify QP state to RTR");
+    Debug::notifyError("failed to modify QP state to RTR, error:%s", strerror(errno));
     return false;
   }
   return true;
@@ -659,6 +659,28 @@ int RdmaSocket::SocketConnect(uint16_t NodeID) {
     return -1;
   }
   return sock;
+}
+
+void RdmaSocket::RdmaConnect(uint16_t NodeID){
+  int sock;
+  sock = SocketConnect(NodeID);
+
+  if (sock < 0) {
+    Debug::notifyError("Socket connection failed to server 1");
+    return;
+  }
+  PeerSockData *peer = (PeerSockData *)malloc(sizeof(PeerSockData));
+  peer->sock = sock;
+  /* Add server's NodeID to the structure */
+  peer->NodeID = 1;
+  if (ConnectQueuePair(peer) == false) {
+    Debug::notifyError("RDMA connect with error");
+    return;
+  } else {
+    peers[peer->NodeID] = peer;
+    peer->counter = 0;
+    Debug::debugItem("Finished Connecting to Node%d", peer->NodeID);
+  }
 }
 
 void RdmaSocket::RdmaConnect() {
