@@ -1,19 +1,35 @@
-/*************************************************************************
-	> File Name: client.cpp
-	> Author: chenchao
-	> Mail: cqwzchenchao@163.com
-	> Created Time: Wed 13 Dec 2017 10:43:48 AM CST
- ************************************************************************/
+#include <stdlib.h>
+#include <sys/time.h>
+#include <time.h>
+#include <iostream>
+#include "HostAndPort.h"
+#include "RDMACMSocket.h"
 
-#include "RdmaSocket.hpp"
-#include "Configuration.hpp"
+uint64_t getnsecs(const struct timespec &in) {
+  return in.tv_sec * 1000000000LL + in.tv_nsec;
+}
 
-int main (int argc, char **argv){
-  uint64_t mm = (uint64_t)malloc(1024);
-  Configuration *config = new Configuration(argv[1]);
-  RdmaSocket *socket = new RdmaSocket(1, mm, 1024, config, false, 0);
-  socket->RdmaConnect(1);
-  char message[20] = "Hello World!\n";
-  ::memcpy((void *)mm, message, 20);
-  socket->RdmaWrite(1, mm, 0, 20, socket->getNodeID(), 0);
+int main(int argc, char *argv[]) {
+  try {
+    HostAndPort host_port(argv[1], argv[2]);
+    RDMACMSocket *clientSocket = RDMACMSocket::connect(host_port);
+    struct timespec nbegin;
+    struct timespec nend;
+    const int count = atoi(argv[3]);
+    clock_gettime(CLOCK_REALTIME, &nbegin);
+    for (int i = 0; i < count; ++i) {
+      Buffer sendPacket = clientSocket->get_send_buf();
+      memset(sendPacket.addr, 'b', sendPacket.size);
+      clientSocket->post_send(sendPacket);
+      Buffer readPacket = clientSocket->get_recv_buf();
+      clientSocket->post_recv(readPacket);
+    }
+    clock_gettime(CLOCK_REALTIME, &nend);
+    const uint64_t nsecs = getnsecs(nend) - getnsecs(nbegin);
+    std::cout << "wrote " << count << " in " << nsecs << " nsecs" << std::endl;
+  } catch (std::exception &e) {
+    std::cerr << "exception: " << e.what() << std::endl;
+  }
+
+  return 0;
 }
