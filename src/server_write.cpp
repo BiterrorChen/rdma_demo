@@ -17,14 +17,14 @@ void thr(RDMAWriteImmSocket *clientSocket) {
     MessageHeader header;
     clientSocket->recv_header(&header);
     if (header.req_type == MessageType::CLOSE) {
-      break;
+      delete clientSocket;
+      return;
     }
     std::cout << "recv new message:";
     char *message = clientSocket->get_body(header.body_size);
     std::cout << std::string(message) << std::endl;
     clientSocket->clear_msg_buf();
   }
-  delete clientSocket;
 }
 
 int main(int argc, char *argv[]) {
