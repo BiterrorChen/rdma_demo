@@ -19,7 +19,8 @@ RDMAWriteSocket::RDMAWriteSocket(RDMACMSocket *rsock) {
 
 RDMAWriteSocket::~RDMAWriteSocket() {
   delete this->rsock;
-  rdma_dereg_mr(this->write_mr);
+  ibv_dereg_mr(this->write_mr);
+  //rdma_dereg_mr(this->write_mr);
   this->write_buf.free();
 }
 
@@ -30,8 +31,10 @@ RDMAWriteSocket *RDMAWriteSocket::connect(const HostAndPort &hp) {
 void RDMAWriteSocket::setup_write_buf() {
   this->write_buf = Buffer::allocate(PACKET_SIZE);
 
-  this->write_mr = rdma_reg_write(this->rsock->client_id, this->write_buf.addr,
-                                  this->write_buf.size);
+  //this->write_mr = rdma_reg_write(this->rsock->client_id, this->write_buf.addr,
+                                  //this->write_buf.size);
+  this->write_mr = ibv_reg_mr(this->rsock->client_id->pd, this->write_buf.addr, this->write_buf.size,
+                          IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ);
   if (this->write_mr == NULL) {
     delete this->rsock;
     this->write_buf.free();

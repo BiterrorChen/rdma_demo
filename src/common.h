@@ -9,7 +9,7 @@
 #define COMMON_H_
 
 #define PACKET_WINDOW_SIZE (10)
-#define PACKET_SIZE (2560)
+#define PACKET_SIZE (2048)
 #define LISTEN_MAX (10)
 
 #endif
