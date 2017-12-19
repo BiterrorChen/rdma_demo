@@ -4,6 +4,12 @@ RDMAWriteSocket::RDMAWriteSocket(RDMACMSocket *rsock) {
   this->rsock = rsock;
   this->write_mr = NULL;
   setup_write_buf();
+  struct ibv_qp_attr attr;
+  attr.qp_access_flags = IBV_ACCESS_REMOTE_READ | 
+                        IBV_ACCESS_REMOTE_WRITE | 
+                        IBV_ACCESS_REMOTE_ATOMIC |
+                        IBV_ACCESS_LOCAL_WRITE;
+  ::ibv_modify_qp(rsock->client_id->qp, &attr, IBV_QP_ACCESS_FLAGS);
 
   // send rkey and addr
   Buffer send_buf = this->rsock->get_send_buf();
