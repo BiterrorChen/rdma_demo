@@ -44,4 +44,9 @@ client
 $./client server-address file-name
 
 ---
-`/src` fork from https://github.com/thustorage/octopus
+
+src:
+
+./server_write port_num
+./client_write ip port_num write_times
+
