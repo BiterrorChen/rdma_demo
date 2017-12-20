@@ -24,6 +24,11 @@ void thr(RDMAWriteImmSocket *clientSocket) {
     char *message = clientSocket->get_body(header.body_size);
     std::cout << std::string(message) << std::endl;
     clientSocket->clear_msg_buf();
+
+    header.req_type = MessageType::NORMAL;
+    std::string str = "server echo.";
+    header.body_size = str.size() + 1;
+    clientSocket->send_msg(header, (char *)str.c_str());
   }
 }
 

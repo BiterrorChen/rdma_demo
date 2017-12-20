@@ -21,8 +21,16 @@ int main(int argc, char **argv) {
     std::string str = "Hello World!";
     MessageHeader header(MessageType::NORMAL, str.size() + 1);
     clientSocket->send_msg(header, (char *)str.c_str());
-    std::cout << "client write success" << std::endl;
+
+    clientSocket->recv_header(&header);
+    if (header.req_type == MessageType::CLOSE){
+      delete clientSocket;
+      return 0;
+    }
+    char *message = clientSocket->get_body(header.body_size);
+    std::cout << "client recv :" << std::string(message) << std::endl;
   }
+  pause();
   clientSocket->send_close();
   delete clientSocket;
 }
