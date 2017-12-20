@@ -11,6 +11,7 @@
 #include <thread>
 #include "RDMAWriteImmSocket.h"
 #include "RDMAWriteImmServerSocket.h"
+#include <glog/logging.h>
 
 void thr(RDMAWriteImmSocket *clientSocket) {
   while(1) {
@@ -33,6 +34,7 @@ void thr(RDMAWriteImmSocket *clientSocket) {
 }
 
 int main(int argc, char *argv[]) {
+  google::InitGoogleLogging(argv[0]);
   try {
     RDMAWriteImmServerSocket serverSocket(argv[1]);
 
@@ -44,5 +46,6 @@ int main(int argc, char *argv[]) {
     std::cerr << "exception: " << e.what() << std::endl;
   }
 
+  google::ShutdownGoogleLogging();
   return 0;
 }

@@ -1,4 +1,5 @@
 #include "RDMACMSocket.h"
+#include <glog/logging.h>
 
 RDMACMSocket::RDMACMSocket(struct rdma_cm_id *client_id)
     : send_bufs(PACKET_WINDOW_SIZE) {
@@ -138,6 +139,9 @@ int RDMACMSocket::poll_recv_cq(int num_entries, struct ibv_wc *wc) {
 Buffer RDMACMSocket::get_recv_buf() {
   struct ibv_wc wc;
   poll_recv_cq(1, &wc);
+  if (wc.status != IBV_WC_SUCCESS) {
+    LOG(WARNING) << "RDMACMSocket::get_recv_buf error status:" << wc.status;  
+  }
   return Buffer(reinterpret_cast<char *>(wc.wr_id), wc.byte_len);
 }
 

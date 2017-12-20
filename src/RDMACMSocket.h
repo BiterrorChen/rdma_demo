@@ -49,7 +49,6 @@ static inline int rdma_post_write_imm(struct rdma_cm_id *id, void *context,
 
   sge.addr = (uint64_t)(uintptr_t)addr;
   sge.length = (uint32_t)length;
-  std::cout << length << std::endl;
   //sge.length = 5;
   sge.lkey = mr ? mr->lkey : 0;
 
