@@ -18,6 +18,9 @@ class Buffer {
       : addr(addr), size(size), write_pos(addr), read_pos(addr) {}
 
   static Buffer allocate(size_t size);
+  int GetCurrentSize() const{
+    return write_pos - read_pos;
+  }
 
   Buffer &write(void *src, size_t count);
   template <class T>

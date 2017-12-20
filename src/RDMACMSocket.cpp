@@ -156,7 +156,7 @@ void RDMACMSocket::post_write(const Buffer &buf, const RemoteKeyAndAddr &rka) {
   uint32_t rkey = rka.rkey;
   uint64_t raddr = rka.remote_addr;
 
-  if (rdma_post_write(this->client_id, buf.addr, buf.addr, buf.size,
+  if (rdma_post_write(this->client_id, buf.addr, buf.addr, buf.GetCurrentSize(),
                       this->verbs_mr, 0, raddr, rkey) < 0) {
     this->send_bufs.push_front(buf);
     perror("rdma_post_write");
@@ -169,7 +169,7 @@ void RDMACMSocket::post_write_imm(const Buffer &buf,
   uint32_t rkey = rka.rkey;
   uint64_t raddr = rka.remote_addr;
 
-  if (rdma_post_write_imm(this->client_id, buf.addr, buf.addr, buf.size,
+  if (rdma_post_write_imm(this->client_id, buf.addr, buf.addr, buf.GetCurrentSize(),
                           this->verbs_mr, 0, raddr, rkey) < 0) {
     this->send_bufs.push_front(buf);
     perror("rdma_post_write_imm");
@@ -181,7 +181,7 @@ void RDMACMSocket::post_read(const Buffer &buf, const RemoteKeyAndAddr &rka) {
   uint32_t rkey = rka.rkey;
   uint64_t raddr = rka.remote_addr;
 
-  if (rdma_post_read(this->client_id, buf.addr, buf.addr, buf.size,
+  if (rdma_post_read(this->client_id, buf.addr, buf.addr, buf.GetCurrentSize(),
                      this->verbs_mr, 0, raddr, rkey) < 0) {
     perror("rdma_post_read");
     exit(1);
