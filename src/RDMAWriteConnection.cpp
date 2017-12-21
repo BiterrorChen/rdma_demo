@@ -77,6 +77,8 @@ void RDMAWriteConnection::GetMessage(int &size, char *&buffer){
   char *message = client_socket_->get_body(header.body_size);
   buffer = (char *)::malloc(size);
   ::memcpy(buffer, message, size);
+  
   std::string str("");
-  DoSend(str);
+  MessageHeader header2(MessageType::NORMAL, str.size() + 1);
+  client_socket_->send_msg(header, (char *)str.c_str());
 }
