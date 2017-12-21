@@ -74,4 +74,6 @@ void RDMAWriteConnection::GetMessage(int &size, char *&buffer){
   }
   size = header.body_size;
   buffer = client_socket_->get_body(header.body_size);
+  std::string str("");
+  DoSend(str);
 }
