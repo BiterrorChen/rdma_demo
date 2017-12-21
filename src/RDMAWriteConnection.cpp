@@ -41,6 +41,7 @@ void RDMAWriteConnection::SendThr(){
 void RDMAWriteConnection::DoSend(std::string &str){
   MessageHeader header(MessageType::NORMAL, str.size() + 1);
   client_socket_->send_msg(header, (char *)str.c_str());
+  //std::cout << "send size : " << header.body_size << std::endl;
 
   client_socket_->recv_header(&header);
   if (header.req_type == MessageType::CLOSE){
@@ -78,6 +79,7 @@ void RDMAWriteConnection::GetMessage(int &size, char *&buffer){
   buffer = (char *)::malloc(size);
   ::memcpy(buffer, message, size);
   
+  client_socket_->clear_msg_buf();
   std::string str("");
   MessageHeader header2(MessageType::NORMAL, str.size() + 1);
   client_socket_->send_msg(header, (char *)str.c_str());
