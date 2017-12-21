@@ -16,27 +16,31 @@
 #include <mutex>
 #include <thread>
 
+enum class Status{
+  Begining,
+  StartThread,
+  Working,
+  Ending
+};
+
 class RDMAWriteConnection {
 public:
   void SendMsg(std::string&, int level);
   void SendClose();
   void GetMessage(int &size, char *&buffer);
-  int GetUnSendSize(){
-    std::unique_lock<std::mutex> lk(mtx_);
-    return buffers_.size() + buffer_higher_.size();
-  }
   RDMAWriteConnection(RDMAWriteImmSocket *clientSocket);
   ~RDMAWriteConnection(){
-    std::unique_lock<std::mutex> lk(mtx_);
-    is_runing_ = false;
+    mtx_.lock();
+    status_ = Status::Ending;
     cv_.notify_all();
+    mtx_.unlock();
     send_thr_.join();
 
     delete client_socket_;
   }
 
 private:
-  bool is_runing_;
+  Status status_;
   RDMAWriteImmSocket *client_socket_;
   std::list<std::string> buffers_ ;
   std::list<std::string> buffer_higher_;

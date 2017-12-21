@@ -21,6 +21,7 @@ void thr(RDMAWriteImmSocket *clientSocket) {
     char *buffer = NULL;
     connection.GetMessage(size, buffer);
     if (size == -1){
+      std::cout << "close " << std::endl;
       return;
     }
     std::cout << "recv message:" << std::string(buffer) << std::endl;

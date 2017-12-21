@@ -26,9 +26,7 @@ int main(int argc, char **argv) {
     std::string str = "Hello World!";
     connect.SendMsg(str, 0);
   }
-  pause();
-  while(connect.GetUnSendSize() == 0)
-    connect.SendClose();
+  connect.SendClose();
   google::ShutdownGoogleLogging();
   return 0;
 }
