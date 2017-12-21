@@ -21,6 +21,10 @@ public:
   void SendMsg(std::string&, int level);
   void SendClose();
   void GetMessage(int &size, char *&buffer);
+  int GetUnSendSize(){
+    std::unique_lock<std::mutex> lk(mtx_);
+    return buffers_.size() + buffer_higher_.size();
+  }
   RDMAWriteConnection(RDMAWriteImmSocket *clientSocket);
   ~RDMAWriteConnection(){
     std::unique_lock<std::mutex> lk(mtx_);

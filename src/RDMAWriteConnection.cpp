@@ -68,6 +68,7 @@ void RDMAWriteConnection::SendClose(){
 void RDMAWriteConnection::GetMessage(int &size, char *&buffer){
   MessageHeader header;
   client_socket_->recv_header(&header);
+  std::cout << "get message success" << std::endl;
   if (header.req_type == MessageType::CLOSE){
     size = -1;
     return;
