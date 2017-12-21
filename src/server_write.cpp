@@ -24,6 +24,7 @@ void thr(RDMAWriteImmSocket *clientSocket) {
       return;
     }
     std::cout << "recv message:" << std::string(buffer) << std::endl;
+    delete buffer;
   }
 }
 
