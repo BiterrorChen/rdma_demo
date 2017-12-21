@@ -12,28 +12,21 @@
 #include "HostAndPort.h"
 #include "RDMAWriteImmSocket.h"
 #include <glog/logging.h>
+#include "RDMAWriteConnection.h"
 
 int main(int argc, char **argv) {
   google::InitGoogleLogging(argv[0]);
   HostAndPort host_port(argv[1], argv[2]);
   RDMAWriteImmSocket *clientSocket = RDMAWriteImmSocket::connect(host_port);
+  RDMAWriteConnection connect(clientSocket);
+
   const int count = atoi(argv[3]);
 
   for (int i = 0; i < count; ++i){
     std::string str = "Hello World!";
-    MessageHeader header(MessageType::NORMAL, str.size() + 1);
-    clientSocket->send_msg(header, (char *)str.c_str());
-
-    clientSocket->recv_header(&header);
-    if (header.req_type == MessageType::CLOSE){
-      delete clientSocket;
-      return 0;
-    }
-    char *message = clientSocket->get_body(header.body_size);
-    std::cout << "client recv :" << std::string(message) << std::endl;
+    connect.SendMsg(str, 0);
   }
-  clientSocket->send_close();
-  delete clientSocket;
+  connect.SendClose();
   google::ShutdownGoogleLogging();
   return 0;
 }

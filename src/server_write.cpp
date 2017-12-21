@@ -12,24 +12,18 @@
 #include "RDMAWriteImmSocket.h"
 #include "RDMAWriteImmServerSocket.h"
 #include <glog/logging.h>
+#include "RDMAWriteConnection.h"
 
 void thr(RDMAWriteImmSocket *clientSocket) {
+  RDMAWriteConnection connection(clientSocket);
   while(1) {
-    MessageHeader header;
-    clientSocket->recv_header(&header);
-    if (header.req_type == MessageType::CLOSE) {
-      delete clientSocket;
+    int size = 0;
+    char *buffer = NULL;
+    connection.GetMessage(size, buffer);
+    if (size == -1){
       return;
     }
-    std::cout << "recv new message:";
-    char *message = clientSocket->get_body(header.body_size);
-    std::cout << std::string(message) << std::endl;
-    clientSocket->clear_msg_buf();
-
-    header.req_type = MessageType::NORMAL;
-    std::string str = "server echo.";
-    header.body_size = str.size() + 1;
-    clientSocket->send_msg(header, (char *)str.c_str());
+    std::cout << "recv message:" << std::string(buffer) << std::endl;
   }
 }
 
