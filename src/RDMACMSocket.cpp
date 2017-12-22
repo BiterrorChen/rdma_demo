@@ -10,8 +10,7 @@ RDMACMSocket::RDMACMSocket(struct rdma_cm_id *client_id)
 
 RDMACMSocket::~RDMACMSocket() {
   rdma_disconnect(this->client_id);
-  //rdma_dereg_mr(this->verbs_mr);
-  ibv_dereg_mr(this->verbs_mr);
+  rdma_dereg_mr(this->verbs_mr);
   rdma_destroy_ep(this->client_id);
   this->verbs_buf.free();
 }
@@ -61,10 +60,8 @@ RDMACMSocket *RDMACMSocket::connect(const HostAndPort &hp) {
 void RDMACMSocket::setup_verbs_buf() {
   this->verbs_buf = Buffer::allocate(PACKET_SIZE * PACKET_WINDOW_SIZE * 2);
 
-  //this->verbs_mr = rdma_reg_msgs(this->client_id, this->verbs_buf.addr,
-                                 //this->verbs_buf.size);
-  this->verbs_mr = ibv_reg_mr(this->client_id->pd, this->verbs_buf.addr, this->verbs_buf.size,
-                          IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ);
+  this->verbs_mr = rdma_reg_msgs(this->client_id, this->verbs_buf.addr,
+                                 this->verbs_buf.size);
   if (this->verbs_mr == NULL) {
     this->verbs_buf.free();
     rdma_destroy_ep(this->client_id);
