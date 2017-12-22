@@ -23,7 +23,8 @@ int main(int argc, char **argv) {
   const int count = atoi(argv[3]);
 
   for (int i = 0; i < count; ++i){
-    std::string str = "Hello World!";
+    //std::string str = "Hello World!";
+    std::string str(995, 'a');
     connect.SendMsg(str, 0);
   }
   connect.SendClose();
