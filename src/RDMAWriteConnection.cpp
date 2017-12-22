@@ -18,10 +18,12 @@ RDMAWriteConnection::RDMAWriteConnection(RDMAWriteImmSocket *client_socket)
 
 void RDMAWriteConnection::SendThr(){
   std::unique_lock<std::mutex> lk(mtx_);
+  std::cout << "thread run" << std::endl;
   status_ = Status::StartThread;
   while( 1 ){
     while(buffers_.empty() && buffer_higher_.empty()){
       cv_.wait(lk);
+      std::cout << "wake!! " << std::endl;
       if(status_ == Status::Ending){
         return;
       }
@@ -42,6 +44,7 @@ void RDMAWriteConnection::SendThr(){
 void RDMAWriteConnection::DoSend(std::string &str){
   MessageHeader header(MessageType::NORMAL, str.size() + 1);
   client_socket_->send_msg(header, (char *)str.c_str());
+  std::cout << "send size : " << header.body_size << std::endl;
 
   client_socket_->recv_header(&header);
   if (header.req_type == MessageType::CLOSE){
@@ -58,6 +61,7 @@ void RDMAWriteConnection::SendMsg(std::string &str, int level){
     buffers_.push_back(str);
   }
   
+  std::cout << "buffer size :" << buffer_higher_.size() + buffers_.size() << std::endl;
   cv_.notify_all();
 }
 
@@ -67,12 +71,14 @@ void RDMAWriteConnection::SendClose(){
     if (buffers_.size() + buffer_higher_.size() == 0)
       break;
   }
+  std::cout << "close buffer size : " << buffers_.size() + buffer_higher_.size()  << std::endl;
   client_socket_->send_close();
 }
 
 void RDMAWriteConnection::GetMessage(int &size, char *&buffer){
   MessageHeader header;
   client_socket_->recv_header(&header);
+  std::cout << "get message success" << std::endl;
   if (header.req_type == MessageType::CLOSE){
     size = -1;
     return;
