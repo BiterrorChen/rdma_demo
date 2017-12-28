@@ -114,7 +114,7 @@ Buffer RDMACMSocket::get_send_buf() {
 }
 
 void RDMACMSocket::post_send(const Buffer &buf) {
-  if (rdma_post_send(this->client_id, buf.addr, buf.addr, buf.size,
+  if (rdma_post_send(this->client_id, buf.addr, buf.addr, buf.GetCurrentSize(),
                      this->verbs_mr, 0) < 0) {
     rdma_dereg_mr(this->verbs_mr);
     this->verbs_buf.free();

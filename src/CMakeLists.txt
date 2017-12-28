@@ -8,7 +8,8 @@ set(RDMA_SRC
   RDMAWriteImmSocket.cpp
   RDMAWriteServerSocket.cpp
   RDMAWriteSocket.cpp
-  RDMAWriteConnection.cpp)
+  RDMAWriteConnection.cpp
+  RDMASendConnection.cpp)
 
 add_library(rdmalib ${RDMA_SRC})
 
