@@ -45,6 +45,7 @@ private:
   std::list<std::string> buffers_ ;
   std::list<std::string> buffer_higher_;
   std::thread send_thr_;
+  bool closing_;
 
   std::condition_variable cv_;
   std::mutex mtx_;

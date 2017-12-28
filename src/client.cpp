@@ -27,6 +27,7 @@ int main(int argc, char *argv[]) {
       string str = "Hello World!";
       connect.SendMsg(str, 1);
     }
+    connect.SendClose();
     clock_gettime(CLOCK_REALTIME, &nend);
     const uint64_t nsecs = getnsecs(nend) - getnsecs(nbegin);
     std::cout << "wrote " << count << " in " << nsecs << " nsecs" << std::endl;

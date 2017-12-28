@@ -42,6 +42,7 @@ public:
 private:
   Status status_;
   RDMAWriteImmSocket *client_socket_;
+  bool closing_;
   std::list<std::string> buffers_ ;
   std::list<std::string> buffer_higher_;
   std::thread send_thr_;

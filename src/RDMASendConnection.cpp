@@ -9,7 +9,8 @@
 
 RDMASendConnection::RDMASendConnection(RDMACMSocket *client_socket)
   :status_(Status::Begining),
-   client_socket_(client_socket){
+   client_socket_(client_socket),
+   closing_(false){
   send_thr_ = std::thread(&RDMASendConnection::SendThr, this);
   while(status_ != Status::StartThread);
   status_ = Status::Working;
@@ -20,22 +21,39 @@ void RDMASendConnection::SendThr(){
   std::cout << "thread run" << std::endl;
   status_ = Status::StartThread;
   while( 1 ){
-    while(buffers_.empty() && buffer_higher_.empty()){
+    while(buffers_.empty() && buffer_higher_.empty() && closing_ == false){
+      if(status_ == Status::Ending &&
+          buffers_.empty() &&
+          buffer_higher_.empty() &&
+          closing_ == false){
+        return;
+      }
       cv_.wait(lk);
       std::cout << "wake!! " << std::endl;
-      if(status_ == Status::Ending){
+      if(status_ == Status::Ending &&
+          buffers_.empty() &&
+          buffer_higher_.empty() &&
+          closing_ == false){
         return;
       }
     }
     while(!buffer_higher_.empty()){
       std::string str = buffer_higher_.front();
       buffer_higher_.pop_front();
+      lk.unlock();
       DoSend(str);
+      lk.lock();
     }
     while(!buffers_.empty()){
       std::string str = buffers_.front();
       buffers_.pop_front();
+      lk.unlock();
       DoSend(str);
+      lk.lock();
+    }
+    while(buffer_higher_.empty() && buffers_.empty() && closing_){
+      client_socket_->send_close_send();
+      closing_ = false;
     }
   }
 }
@@ -59,13 +77,9 @@ void RDMASendConnection::SendMsg(std::string &str, int level){
 }
 
 void RDMASendConnection::SendClose(){
-  while(1){
-    std::unique_lock<std::mutex> lk(mtx_);
-    if (buffers_.size() + buffer_higher_.size() == 0)
-      break;
-  }
-  std::cout << "close buffer size : " << buffers_.size() + buffer_higher_.size()  << std::endl;
-  client_socket_->send_close_send();
+  std::unique_lock<std::mutex> lk(mtx_);
+  closing_ = true;
+  cv_.notify_one();
 }
 
 void RDMASendConnection::GetMessage(int &size, char *&buffer){

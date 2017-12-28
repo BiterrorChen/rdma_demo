@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
 
   for (int i = 0; i < count; ++i){
     //std::string str = "Hello World!";
-    std::string str(996, 'a');
+    std::string str(990, 'a');
     connect.SendMsg(str, 0);
   }
   connect.SendClose();
