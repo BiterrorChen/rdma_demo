@@ -17,10 +17,13 @@ RDMASendConnection::RDMASendConnection(RDMACMSocket *client_socket)
 }
 
 void RDMASendConnection::SendThr(){
-  std::unique_lock<std::mutex> lk(mtx_);
+  std::unique_lock<std::mutex> lk(mtx_, std::defer_lock);
   std::cout << "thread run" << std::endl;
   status_ = Status::StartThread;
   while( 1 ){
+    std::list<std::string> buffer;
+    std::list<std::string> buffer_higher;
+    lk.lock();
     while(buffers_.empty() && buffer_higher_.empty() && closing_ == false){
       if(status_ == Status::Ending &&
           buffers_.empty() &&
@@ -37,24 +40,26 @@ void RDMASendConnection::SendThr(){
         return;
       }
     }
-    while(!buffer_higher_.empty()){
-      std::string str = buffer_higher_.front();
-      buffer_higher_.pop_front();
-      lk.unlock();
+    buffer.swap(buffers_);
+    buffer_higher.swap(buffer_higher_);
+    lk.unlock();
+
+    while(!buffer_higher.empty()){
+      std::string str = buffer_higher.front();
+      buffer_higher.pop_front();
       DoSend(str);
-      lk.lock();
     }
-    while(!buffers_.empty()){
-      std::string str = buffers_.front();
-      buffers_.pop_front();
-      lk.unlock();
+    while(!buffer.empty()){
+      std::string str = buffer.front();
+      buffer.pop_front();
       DoSend(str);
-      lk.lock();
     }
+    lk.lock();
     while(buffer_higher_.empty() && buffers_.empty() && closing_){
       client_socket_->send_close_send();
       closing_ = false;
     }
+    lk.unlock();
   }
 }
 
