@@ -28,7 +28,7 @@ public:
   void SendMsg(std::string&, int level);
   void SendClose();
   void GetMessage(int &size, char *&buffer);
-  RDMASendConnection(RDMAWriteImmSocket *clientSocket);
+  RDMASendConnection(RDMACMSocket *clientSocket);
   ~RDMASendConnection(){
     mtx_.lock();
     status_ = Status::Ending;
@@ -41,7 +41,7 @@ public:
 
 private:
   Status status_;
-  RDMAWriteImmSocket *client_socket_;
+  RDMACMSocket *client_socket_;
   std::list<std::string> buffers_ ;
   std::list<std::string> buffer_higher_;
   std::thread send_thr_;

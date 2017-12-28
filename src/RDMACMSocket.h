@@ -8,6 +8,7 @@
 #include "HostAndPort.h"
 #include "RemoteKeyAndAddr.h"
 #include "common.h"
+#include "MessageHeader.h"
 
 #define VERBS_BUF_SIZE (PACKET_SIZE * PACKET_WINDOW_SIZE * 2)
 
@@ -39,6 +40,11 @@ class RDMACMSocket : boost::noncopyable {
   void post_write(const Buffer &buf, const RemoteKeyAndAddr &rka);
   void post_write_imm(const Buffer &buf, const RemoteKeyAndAddr &rka);
   void post_read(const Buffer &buf, const RemoteKeyAndAddr &rka);
+
+  void send_msg_send(MessageHeader header, char *body);
+  Buffer recv_msg_send();
+  void clear_msg(Buffer buf);
+  void send_close_send();
 };
 
 static inline int rdma_post_write_imm(struct rdma_cm_id *id, void *context,

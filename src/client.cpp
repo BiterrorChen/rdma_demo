@@ -16,7 +16,7 @@ uint64_t getnsecs(const struct timespec &in) {
 int main(int argc, char *argv[]) {
   try {
     HostAndPort host_port(argv[1], argv[2]);
-    RDMAWriteImmSocket *clientSocket = RDMAWriteImmSocket::connect(host_port);
+    RDMACMSocket *clientSocket = RDMACMSocket::connect(host_port);
     RDMASendConnection connect(clientSocket);
 
     struct timespec nbegin;

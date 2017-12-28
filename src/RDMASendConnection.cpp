@@ -7,7 +7,7 @@
 
 #include "RDMASendConnection.h"
 
-RDMASendConnection::RDMASendConnection(RDMAWriteImmSocket *client_socket)
+RDMASendConnection::RDMASendConnection(RDMACMSocket *client_socket)
   :status_(Status::Begining),
    client_socket_(client_socket){
   send_thr_ = std::thread(&RDMASendConnection::SendThr, this);

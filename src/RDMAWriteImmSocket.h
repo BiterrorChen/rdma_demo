@@ -17,8 +17,4 @@ class RDMAWriteImmSocket : public RDMAWriteSocket {
   void clear_msg_buf();
   void send_close();
   
-  void send_msg_send(MessageHeader header, char *body);
-  Buffer recv_msg_send();
-  void send_close_send();
-  void clear_msg(Buffer buf);
 };

@@ -5,7 +5,7 @@
 #include "RDMAWriteImmServerSocket.h"
 #include "RDMASendConnection.h"
 
-void thr(RDMAWriteImmSocket *clientSocket) {
+void thr(RDMACMSocket *clientSocket) {
   std::cout << "connect success" << std::endl;
   RDMASendConnection connection(clientSocket);
   while(1) {
@@ -23,10 +23,10 @@ void thr(RDMAWriteImmSocket *clientSocket) {
 
 int main(int argc, char *argv[]) {
   try {
-    RDMAWriteImmServerSocket serverSocket(argv[1]);
+    RDMACMServerSocket serverSocket(argv[1]);
 
     while (1) {
-      RDMAWriteImmSocket *clientSocket = serverSocket.accept();
+      RDMACMSocket *clientSocket = serverSocket.accept();
       std::thread(thr, clientSocket).detach();
     }
   } catch (std::exception &e) {
