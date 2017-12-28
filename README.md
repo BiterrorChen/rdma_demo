@@ -46,7 +46,13 @@ $./client server-address file-name
 ---
 
 src:
-
-./server_write port_num
+### for write_imm
+./server_write port_num   
 ./client_write ip port_num write_times
+
+### for send/recv
+./server port_num   
+./client ip port_num write_times
+
+
 
